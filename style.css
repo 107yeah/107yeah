@@ -1,0 +1,245 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 头部样式 */
+header {
+    background: linear-gradient(135deg, #1a73e8, #6c8ef5);
+    color: white;
+    padding: 30px 0;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* 留言表单样式 */
+.message-form {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border 0.3s;
+}
+
+input:focus, textarea:focus {
+    border-color: #1a73e8;
+    outline: none;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+button {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #0d5bb9;
+}
+
+/* 留言列表样式 */
+.messages-section h2 {
+    margin-bottom: 20px;
+    color: #333;
+    border-bottom: 2px solid #1a73e8;
+    padding-bottom: 10px;
+}
+
+.message {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    position: relative;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.message-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1a73e8;
+}
+
+.message-meta {
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.message-content {
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.message-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.reply-btn, .delete-btn {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    border-radius: 3px;
+}
+
+.reply-btn {
+    background: #34a853;
+}
+
+.reply-btn:hover {
+    background: #2a8e45;
+}
+
+.delete-btn {
+    background: #ea4335;
+}
+
+.delete-btn:hover {
+    background: #d33426;
+}
+
+/* 回复表单样式 */
+.reply-form {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+    display: none;
+}
+
+.reply-form.active {
+    display: block;
+}
+
+/* 回复列表样式 */
+.replies {
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.reply {
+    background: #f9f9f9;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.reply-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.reply-author {
+    font-weight: 600;
+    color: #1a73e8;
+}
+
+.reply-date {
+    color: #777;
+}
+
+/* 空状态样式 */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #777;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #ddd;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .message-header {
+        flex-direction: column;
+    }
+    
+    .message-meta {
+        margin-top: 5px;
+    }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
