@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地音乐照片展示</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>本地音乐照片展示</h1>
+            <p class="subtitle">上传您的照片和音乐，创建个性化体验</p>
+        </header>
+        
+        <div class="upload-section fade-in">
+            <div class="upload-area" id="uploadArea">
+                <i>📁</i>
+                <p class="upload-text">拖放文件到这里或点击选择</p>
+                <p class="upload-hint">支持 JPEG, PNG 图片和 MP3, WAV 音频</p>
+            </div>
+            
+            <div class="file-inputs">
+                <div class="file-input">
+                    <label for="imageInput">选择图片:</label>
+                    <input type="file" id="imageInput" accept="image/*">
+                </div>
+                
+                <div class="file-input">
+                    <label for="audioInput">选择音乐:</label>
+                    <input type="file" id="audioInput" accept="audio/*">
+                </div>
+            </div>
+            
+            <button class="btn" id="startBtn">
+                <i>▶️</i> 开始展示
+            </button>
+        </div>
+        
+        <div class="photo-container" id="photoContainer">
+            <img class="photo-image" id="photoImage" src="" alt="上传的图片">
+            <div class="photo-overlay">
+                <h2 class="photo-title" id="photoTitle">美好时刻</h2>
+                <p class="photo-description" id="photoDescription">让音乐与回忆相伴</p>
+                
+                <div class="music-controls">
+                    <button class="music-btn" id="playBtn">▶️</button>
+                    <button class="music-btn" id="pauseBtn">⏸️</button>
+                    <button class="music-btn" id="stopBtn">⏹️</button>
+                    
+                    <div class="music-info">
+                        <div class="music-title" id="musicTitle">背景音乐</div>
+                        <div class="music-status" id="musicStatus">准备播放</div>
+                    </div>
+                    
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                        <div class="time-display">
+                            <span id="currentTime">0:00</span>
+                            <span id="duration">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="device-info" id="deviceInfo">
+            设备类型: 检测中...
+        </div>
+        
+        <footer>
+            <p>使用本地文件创建个性化音乐照片体验 | 响应式设计</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
