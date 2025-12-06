@@ -1,211 +1,252 @@
+// 等待DOM完全加载
 document.addEventListener('DOMContentLoaded', function() {
     // 获取DOM元素
-    const imageInput = document.getElementById('imageInput');
-    const audioInput = document.getElementById('audioInput');
-    const uploadArea = document.getElementById('uploadArea');
-    const startBtn = document.getElementById('startBtn');
-    const photoContainer = document.getElementById('photoContainer');
-    const photoImage = document.getElementById('photoImage');
-    const photoTitle = document.getElementById('photoTitle');
-    const photoDescription = document.getElementById('photoDescription');
-    const playBtn = document.getElementById('playBtn');
-    const pauseBtn = document.getElementById('pauseBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const musicTitle = document.getElementById('musicTitle');
-    const musicStatus = document.getElementById('musicStatus');
-    const progressContainer = document.getElementById('progressContainer');
-    const progressBar = document.getElementById('progressBar');
-    const currentTime = document.getElementById('currentTime');
-    const duration = document.getElementById('duration');
-    const deviceInfo = document.getElementById('deviceInfo');
+    const initialScreen = document.getElementById('initial-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const viewBtn = document.getElementById('view-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const timerText = document.querySelector('.timer-text');
+    const timerFill = document.querySelector('.timer-fill');
+    const wastedTimeElement = document.getElementById('wasted-time');
+    const mainText = document.querySelectorAll('.main-text');
+    const body = document.querySelector('body');
     
-    // 创建音频元素
-    const audio = new Audio();
-    let isPlaying = false;
-    let currentImageFile = null;
-    let currentAudioFile = null;
+    // 全局变量
+    let timerInterval;
+    let secondsLeft = 60;
+    let totalWastedTime = 0;
+    let isFirstClick = true;
     
-    // 检测设备类型
-    function detectDevice() {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        deviceInfo.textContent = `设备类型: ${isMobile ? '手机' : '电脑/平板'}`;
-    }
-    
-    // 格式化时间
-    function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    }
-    
-    // 更新进度条
-    function updateProgress() {
-        if (audio.duration) {
-            const progressPercent = (audio.currentTime / audio.duration) * 100;
-            progressBar.style.width = `${progressPercent}%`;
-            currentTime.textContent = formatTime(audio.currentTime);
-        }
-    }
-    
-    // 初始化音频
-    function initAudio() {
-        audio.addEventListener('loadedmetadata', function() {
-            duration.textContent = formatTime(audio.duration);
-        });
+    // 点击"查看"按钮
+    viewBtn.addEventListener('click', function() {
+        // 添加按钮点击效果
+        this.classList.add('clicked');
+        setTimeout(() => {
+            this.classList.remove('clicked');
+        }, 300);
         
-        audio.addEventListener('timeupdate', updateProgress);
+        // 切换屏幕显示 - 添加淡出淡入效果
+        initialScreen.style.animation = 'fadeIn 0.5s ease-out reverse';
         
-        audio.addEventListener('ended', function() {
-            musicStatus.textContent = '播放结束';
-            isPlaying = false;
-        });
-    }
-    
-    // 播放音乐
-    function playMusic() {
-        if (currentAudioFile) {
-            audio.play().then(() => {
-                musicStatus.textContent = '正在播放';
-                isPlaying = true;
-            }).catch(error => {
-                musicStatus.textContent = '播放失败，请与页面交互后重试';
-                console.error('播放错误:', error);
+        setTimeout(() => {
+            initialScreen.classList.remove('active');
+            initialScreen.style.animation = '';
+            resultScreen.classList.add('active');
+            
+            // 重置计时器
+            secondsLeft = 60;
+            timerText.textContent = secondsLeft;
+            timerFill.style.background = `conic-gradient(#FF416C 0%, transparent 0%)`;
+            
+            // 如果是第一次点击，添加特殊效果
+            if (isFirstClick) {
+                isFirstClick = false;
+                createConfetti();
+            }
+            
+            // 启动计时器
+            startTimer();
+            
+            // 添加动画效果到文本
+            mainText.forEach(text => {
+                text.style.animation = 'colorChange 3s infinite';
             });
-        }
-    }
-    
-    // 暂停音乐
-    function pauseMusic() {
-        audio.pause();
-        musicStatus.textContent = '已暂停';
-        isPlaying = false;
-    }
-    
-    // 停止音乐
-    function stopMusic() {
-        audio.pause();
-        audio.currentTime = 0;
-        musicStatus.textContent = '已停止';
-        isPlaying = false;
-        updateProgress();
-    }
-    
-    // 处理文件选择
-    function handleFileSelect(event, type) {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        if (type === 'image') {
-            currentImageFile = file;
-            const reader = new FileReader();
             
-            reader.onload = function(e) {
-                photoImage.src = e.target.result;
-                photoTitle.textContent = file.name.replace(/\.[^/.]+$/, ""); // 移除文件扩展名
-                photoDescription.textContent = `上传时间: ${new Date().toLocaleString()}`;
+            // 改变背景颜色以表示状态变化
+            body.style.background = 'linear-gradient(-45deg, #ff0080, #8000ff, #0080ff, #00ff80)';
+            body.style.backgroundSize = '400% 400%';
+        }, 500);
+    });
+    
+    // 点击"再来一次"按钮
+    resetBtn.addEventListener('click', function() {
+        // 添加按钮点击效果
+        this.classList.add('clicked');
+        setTimeout(() => {
+            this.classList.remove('clicked');
+        }, 300);
+        
+        // 切换屏幕显示
+        resultScreen.style.animation = 'fadeIn 0.5s ease-out reverse';
+        
+        setTimeout(() => {
+            resultScreen.classList.remove('active');
+            resultScreen.style.animation = '';
+            initialScreen.classList.add('active');
+            
+            // 停止计时器
+            clearInterval(timerInterval);
+            
+            // 更新总浪费的时间
+            totalWastedTime += (60 - secondsLeft);
+            wastedTimeElement.textContent = totalWastedTime;
+            
+            // 移除文本动画
+            mainText.forEach(text => {
+                text.style.animation = '';
+            });
+            
+            // 恢复原始背景
+            body.style.background = 'linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)';
+            body.style.backgroundSize = '400% 400%';
+        }, 500);
+    });
+    
+    // 启动计时器函数
+    function startTimer() {
+        clearInterval(timerInterval);
+        
+        timerInterval = setInterval(function() {
+            secondsLeft--;
+            timerText.textContent = secondsLeft;
+            
+            // 更新圆形进度条
+            const percentage = ((60 - secondsLeft) / 60) * 100;
+            timerFill.style.background = `conic-gradient(#FF416C ${percentage}%, transparent ${percentage}%)`;
+            
+            // 添加计时器跳动效果
+            timerText.style.transform = 'translate(-50%, -50%) scale(1.1)';
+            setTimeout(() => {
+                timerText.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 200);
+            
+            // 当计时器结束时
+            if (secondsLeft <= 0) {
+                clearInterval(timerInterval);
+                timerText.textContent = "0";
+                
+                // 显示完成消息
+                const timerLabel = document.querySelector('.timer-label');
+                timerLabel.textContent = "你的1分钟已被完全浪费！";
+                timerLabel.style.color = "#FF416C";
+                timerLabel.style.fontWeight = "bold";
+                timerLabel.style.textShadow = "0 0 10px rgba(255, 65, 108, 0.7)";
+                
+                // 更新总浪费的时间
+                totalWastedTime += 60;
+                wastedTimeElement.textContent = totalWastedTime;
+                
+                // 结束时添加特效
+                createEndingEffect();
+            }
+        }, 1000);
+    }
+    
+    // 创建庆祝彩花效果
+    function createConfetti() {
+        const colors = ['#FF416C', '#FF4B2B', '#FFD700', '#23a6d5', '#23d5ab'];
+        const confettiCount = 150;
+        
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.style.position = 'fixed';
+            confetti.style.width = '10px';
+            confetti.style.height = '10px';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.top = '-20px';
+            confetti.style.opacity = '0.8';
+            confetti.style.zIndex = '9999';
+            confetti.style.pointerEvents = 'none';
+            
+            document.body.appendChild(confetti);
+            
+            // 动画
+            const animation = confetti.animate([
+                { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                { transform: `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+            ], {
+                duration: Math.random() * 3000 + 2000,
+                easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
+            });
+            
+            animation.onfinish = () => {
+                confetti.remove();
             };
-            
-            reader.readAsDataURL(file);
-        } else if (type === 'audio') {
-            currentAudioFile = file;
-            const objectURL = URL.createObjectURL(file);
-            audio.src = objectURL;
-            musicTitle.textContent = file.name.replace(/\.[^/.]+$/, ""); // 移除文件扩展名
-            musicStatus.textContent = '音乐已加载';
-            initAudio();
         }
     }
     
-    // 开始展示
-    function startPresentation() {
-        if (!currentImageFile) {
-            alert('请先选择一张图片');
-            return;
-        }
+    // 创建结束特效
+    function createEndingEffect() {
+        const endingText = document.createElement('div');
+        endingText.textContent = '时间到！';
+        endingText.style.position = 'fixed';
+        endingText.style.top = '50%';
+        endingText.style.left = '50%';
+        endingText.style.transform = 'translate(-50%, -50%) scale(0)';
+        endingText.style.fontSize = '5rem';
+        endingText.style.fontWeight = 'bold';
+        endingText.style.color = '#FF416C';
+        endingText.style.zIndex = '10000';
+        endingText.style.textShadow = '0 0 20px rgba(255, 65, 108, 0.8)';
+        endingText.style.pointerEvents = 'none';
+        endingText.style.fontFamily = "'Ma Shan Zheng', cursive";
         
-        photoContainer.style.display = 'block';
-        photoContainer.scrollIntoView({ behavior: 'smooth' });
+        document.body.appendChild(endingText);
         
-        // 尝试自动播放音乐（需要用户交互）
-        if (currentAudioFile) {
-            // 延迟播放以确保用户已与页面交互
-            setTimeout(playMusic, 500);
-        }
+        // 动画效果
+        const animation = endingText.animate([
+            { transform: 'translate(-50%, -50%) scale(0)', opacity: 0 },
+            { transform: 'translate(-50%, -50%) scale(1.2)', opacity: 1 },
+            { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+            { transform: 'translate(-50%, -50%) scale(1)', opacity: 0 }
+        ], {
+            duration: 3000,
+            easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+        });
+        
+        animation.onfinish = () => {
+            endingText.remove();
+        };
     }
     
-    // 事件监听器
-    imageInput.addEventListener('change', (e) => handleFileSelect(e, 'image'));
-    audioInput.addEventListener('change', (e) => handleFileSelect(e, 'audio'));
-    
-    uploadArea.addEventListener('click', function() {
-        imageInput.click();
+    // 添加一些额外的交互效果
+    // 鼠标悬停效果
+    viewBtn.addEventListener('mouseenter', function() {
+        this.querySelector('i').style.transform = 'translateX(8px)';
+        this.style.letterSpacing = '2px';
     });
     
-    uploadArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.7)';
-        uploadArea.style.background = 'rgba(255, 255, 255, 0.1)';
+    viewBtn.addEventListener('mouseleave', function() {
+        this.querySelector('i').style.transform = 'translateX(0)';
+        this.style.letterSpacing = '1px';
     });
     
-    uploadArea.addEventListener('dragleave', function() {
-        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-        uploadArea.style.background = 'transparent';
+    resetBtn.addEventListener('mouseenter', function() {
+        this.querySelector('i').style.transform = 'rotate(180deg) scale(1.2)';
+        this.style.letterSpacing = '2px';
     });
     
-    uploadArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-        uploadArea.style.background = 'transparent';
+    resetBtn.addEventListener('mouseleave', function() {
+        this.querySelector('i').style.transform = 'rotate(0) scale(1)';
+        this.style.letterSpacing = '1px';
+    });
+    
+    // 添加键盘支持
+    document.addEventListener('keydown', function(event) {
+        // 按空格键或回车键触发"查看"按钮
+        if ((event.code === 'Space' || event.code === 'Enter') && initialScreen.classList.contains('active')) {
+            event.preventDefault();
+            viewBtn.click();
+        }
         
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            // 尝试识别文件类型
-            for (let file of files) {
-                if (file.type.startsWith('image/')) {
-                    const event = { target: { files: [file] } };
-                    handleFileSelect(event, 'image');
-                } else if (file.type.startsWith('audio/')) {
-                    const event = { target: { files: [file] } };
-                    handleFileSelect(event, 'audio');
-                }
-            }
+        // 按R键重置
+        if (event.code === 'KeyR' && resultScreen.classList.contains('active')) {
+            event.preventDefault();
+            resetBtn.click();
         }
     });
     
-    startBtn.addEventListener('click', startPresentation);
-    playBtn.addEventListener('click', playMusic);
-    pauseBtn.addEventListener('click', pauseMusic);
-    stopBtn.addEventListener('click', stopMusic);
+    // 添加页面加载时的动画
+    setTimeout(function() {
+        document.body.style.opacity = 1;
+        initialScreen.style.transform = 'scale(1)';
+    }, 100);
     
-    progressContainer.addEventListener('click', function(e) {
-        if (!audio.duration) return;
-        
-        const rect = progressContainer.getBoundingClientRect();
-        const percent = (e.clientX - rect.left) / rect.width;
-        audio.currentTime = percent * audio.duration;
-        updateProgress();
-    });
-    
-    // 页面点击时尝试播放音乐（处理自动播放限制）
-    document.addEventListener('click', function() {
-        if (currentAudioFile && !isPlaying) {
-            // 仅在音乐已加载但未播放时尝试播放
-            playMusic();
-        }
-    });
-    
-    // 初始化
-    detectDevice();
-    
-    // 添加键盘快捷键
-    document.addEventListener('keydown', function(e) {
-        if (e.code === 'Space') {
-            e.preventDefault();
-            if (isPlaying) {
-                pauseMusic();
-            } else {
-                playMusic();
-            }
-        }
-    });
+    // 动态改变背景
+    setInterval(() => {
+        const hue = (Date.now() / 20000) % 360;
+        document.documentElement.style.setProperty('--hue', hue);
+    }, 50);
 });

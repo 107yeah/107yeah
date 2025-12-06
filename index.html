@@ -3,74 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>本地音乐照片展示</title>
+    <title>惊喜礼物</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="background-animation"></div>
     <div class="container">
-        <header>
-            <h1>本地音乐照片展示</h1>
-            <p class="subtitle">上传您的照片和音乐，创建个性化体验</p>
-        </header>
-        
-        <div class="upload-section fade-in">
-            <div class="upload-area" id="uploadArea">
-                <i>📁</i>
-                <p class="upload-text">拖放文件到这里或点击选择</p>
-                <p class="upload-hint">支持 JPEG, PNG 图片和 MP3, WAV 音频</p>
+        <div id="initial-screen" class="screen active">
+            <div class="gift-icon">
+                <i class="fas fa-gift"></i>
             </div>
-            
-            <div class="file-inputs">
-                <div class="file-input">
-                    <label for="imageInput">选择图片:</label>
-                    <input type="file" id="imageInput" accept="image/*">
-                </div>
-                
-                <div class="file-input">
-                    <label for="audioInput">选择音乐:</label>
-                    <input type="file" id="audioInput" accept="audio/*">
-                </div>
-            </div>
-            
-            <button class="btn" id="startBtn">
-                <i>▶️</i> 开始展示
+            <h1 class="main-text">点击查看礼物</h1>
+            <p class="sub-text">有一个特别的惊喜在等待着你</p>
+            <button id="view-btn" class="view-btn">
+                <span>查看</span>
+                <i class="fas fa-arrow-right"></i>
             </button>
+            <div class="hint">点击上方按钮查看礼物</div>
         </div>
         
-        <div class="photo-container" id="photoContainer">
-            <img class="photo-image" id="photoImage" src="" alt="上传的图片">
-            <div class="photo-overlay">
-                <h2 class="photo-title" id="photoTitle">美好时刻</h2>
-                <p class="photo-description" id="photoDescription">让音乐与回忆相伴</p>
-                
-                <div class="music-controls">
-                    <button class="music-btn" id="playBtn">▶️</button>
-                    <button class="music-btn" id="pauseBtn">⏸️</button>
-                    <button class="music-btn" id="stopBtn">⏹️</button>
-                    
-                    <div class="music-info">
-                        <div class="music-title" id="musicTitle">背景音乐</div>
-                        <div class="music-status" id="musicStatus">准备播放</div>
-                    </div>
-                    
-                    <div class="progress-container" id="progressContainer">
-                        <div class="progress-bar" id="progressBar"></div>
-                        <div class="time-display">
-                            <span id="currentTime">0:00</span>
-                            <span id="duration">0:00</span>
-                        </div>
-                    </div>
+        <div id="result-screen" class="screen">
+            <div class="clock-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h1 class="main-text">恭喜你，谢晨！！！已被浪费宝贵的1分钟</h1>
+            <p class="sub-text">时间就是金钱，我的朋友！</p>
+            <div class="timer-container">
+                <div class="timer-circle">
+                    <div class="timer-fill"></div>
+                    <div class="timer-text">60</div>
                 </div>
+                <p class="timer-label">你的1分钟正在流逝...</p>
+            </div>
+            <button id="reset-btn" class="reset-btn">
+                <span>再来一次</span>
+                <i class="fas fa-redo"></i>
+            </button>
+            <div class="footer-note">
+                <p><i class="fas fa-lightbulb"></i> 提示：时间宝贵，请合理使用</p>
             </div>
         </div>
         
-        <div class="device-info" id="deviceInfo">
-            设备类型: 检测中...
+        <div class="time-counter">
+            <i class="far fa-clock"></i>
+            <span>已浪费：<span id="wasted-time">0</span> 秒</span>
         </div>
-        
-        <footer>
-            <p>使用本地文件创建个性化音乐照片体验 | 响应式设计</p>
-        </footer>
     </div>
 
     <script src="script.js"></script>
